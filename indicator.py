@@ -31,7 +31,7 @@ def RSI(dataset):
 	return binary_string
 
 def priceVolumn(dataset):
-	
+	return 0
 
 
 def meanAvg(dataset, M, index):
