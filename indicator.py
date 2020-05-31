@@ -30,8 +30,24 @@ def RSI(dataset):
 
 	return binary_string
 
-def priceVolumn(dataset):
-	return 0
+# def priceVolumn(dataset):
+# 	size = dataset.shape[0]-31
+# 	binary_string = np.zeros(size, dtype=np.int)
+
+# 	for i in range(size):
+# 		index = i + 1 # get the index of dataset
+# 		thisday = dataset[index]
+# 		prvday = dataset[index+1] #previous day
+
+# 		if thisday[1] > prvday[1]:
+# 			if thisday[5] > prvday[5]:
+# 				binary_string[i] = 0
+# 			elif thisday[5] == prvday[5]:
+# 				binary_string[i] = 0
+# 			if thisday[5] > prvday[5]:
+# 				binary_string[i] = 0
+
+
 
 
 def meanAvg(dataset, M, index):
