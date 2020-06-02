@@ -51,7 +51,7 @@ def RSI(dataset):
 				if thisday[k+1] > prvday[k+1]:
 					allsum[k][0] += thisday[k+1] - prvday[k+1]
 					allsum[k][1] += 1
-				else
+				else:
 					allsum[k][2] += prvday[k+1] - thisday[k+1]
 					allsum[k][3] += 1
 
@@ -59,7 +59,7 @@ def RSI(dataset):
 			avg_up = allsum[k][0] / allsum[k][1]
 			avg_down = allsum[k][2] / allsum[k][3]
 			rsi = avg_up / (avg_up + avg_down) * 100
-			binary_string[i][k] = rsi > 50
+			binary_string[i][k] = rsi < 50
 
 	return binary_string
 

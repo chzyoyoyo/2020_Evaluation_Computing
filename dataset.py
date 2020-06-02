@@ -1,6 +1,7 @@
 import numpy as np
 import csv
 import time
+import indicator
 
 def GetDataset(path):
     with open(path, encoding='utf-8-sig') as f:
@@ -59,4 +60,18 @@ def TransformToBinary(dataset):
         binary_string[i][5:10] = thisday[1:] > averagedata[1:] #represent the up and downs compared to prvious 30 days
         binary_string[i][-1] = nextday[1] > thisday[1]  # up and down
 
-    return binary_string
+    arr1 = indicator.probability(dataset, 30).reshape(-1,1)
+    arr2 = indicator.comAvg(dataset, 30, 10).reshape(-1,1)
+    arr3 = indicator.RSI(dataset)
+
+    print(arr1.shape)
+
+    print(arr2.shape)
+    print(arr3.shape)
+    print(binary_string.shape)
+
+    input_string = np.hstack((arr1, arr2, arr3, binary_string))
+    
+
+
+    return input_string
