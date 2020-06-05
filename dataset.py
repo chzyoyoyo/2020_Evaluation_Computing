@@ -61,7 +61,11 @@ def TransformToBinary(dataset):
         binary_string[i][-1] = nextday[1] > thisday[1]  # up and down
 
     arr1 = indicator.probability(dataset, 30).reshape(-1,1)
-    arr2 = indicator.comAvg(dataset, 30, 10).reshape(-1,1)
+    arr2_1 = indicator.comAvg(dataset, 10, 5).reshape(-1,1)
+    arr2_2 = indicator.comAvg(dataset, 30, 10).reshape(-1,1)
+    arr2_3 = indicator.comAvg(dataset, 30, 7).reshape(-1,1)
+    arr2 = np.hstack((arr2_1, arr2_2, arr2_3))
+
     arr3 = indicator.RSI(dataset)
 
     print(arr1.shape)
@@ -70,8 +74,9 @@ def TransformToBinary(dataset):
     print(arr3.shape)
     print(binary_string.shape)
 
-    input_string = np.hstack((arr1, arr2, arr3, binary_string))
+    input_string = np.hstack((arr1, arr2, arr3, binary_string[:,-1:]))
     
 
+    print(input_string.shape)
 
     return input_string
