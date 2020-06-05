@@ -40,9 +40,19 @@ if __name__ == '__main__':
     #Get dataset
     my_data = dataset.GetDataset('bitcoin.csv')
     input_data = dataset.TransformToBinary(my_data) #for each data, [situation, action]
-    traindata = input_data[:1000]
-    testdata = input_data[1000:]
+    np.random.shuffle(input_data)
+    # print(input_data.shape())
+    input_size = input_data.shape[0]
+    traindata = input_data[:int(input_size*0.8)]
+    testdata = input_data[int(input_size*0.8):]
 
+
+    sum_up = 0
+    for i in range(input_size):
+        if input_data[i][-1] == 1:
+            sum_up += 1
+
+    print("sum_up: ", sum_up)
     #-------------------- Training stage ---------------------------
     #setting problem
     scenario = ScenarioObserver(BitcoinProblem(traindata))
@@ -64,7 +74,7 @@ if __name__ == '__main__':
 
     #train model
     model = algorithm.new_model(scenario)
-    for epoch in range(10): #train 10 epochs
+    for epoch in range(60): #train 10 epochs
         scenario.reset()
         model.run(scenario , learn=True)
 

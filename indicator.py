@@ -11,11 +11,11 @@ def meanAvg(dataset, M, index):
 	return sumClose / M
 
 def probability(dataset, M):
-	size = dataset.shape[0]-31
+	size = dataset.shape[0]-37
 	binary_string = np.zeros(size, dtype=np.int)
 
 	for i in range(size):
-		index = i + 1 # get the index of dataset
+		index = i + 7 # get the index of dataset
 		avg = meanAvg(dataset, M, index)
 		prob = (dataset[index][1] - avg) / avg
 		binary_string[i] = prob > 0
@@ -23,11 +23,11 @@ def probability(dataset, M):
 	return binary_string
 
 def comAvg(dataset, big, small):
-	size = dataset.shape[0]-31
+	size = dataset.shape[0]-37
 	binary_string = np.zeros(size, dtype=np.int)
 
 	for i in range(size):
-		index = i + 1
+		index = i + 7
 		avg_big = meanAvg(dataset, big, index)
 		avg_small = meanAvg(dataset, small, index)
 		prv_big = meanAvg(dataset, big, index+1)
@@ -43,14 +43,14 @@ def comAvg(dataset, big, small):
 
 
 def RSI(dataset):
-	size = dataset.shape[0]-31
+	size = dataset.shape[0]-37
 	binary_string = np.zeros((size,4), dtype=np.int)
 
 	for i in range(size):
 		allsum = np.zeros((4,4), dtype=np.int)
 
 		for j in range(30): #sum the 
-			index = i + 1 + j # get the index of dataset
+			index = i + 7 + j # get the index of dataset
 			thisday = dataset[index]
 			prvday = dataset[index+1] #previous day
 

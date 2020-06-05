@@ -37,6 +37,8 @@ def VolumeProcessing(str):
         result = float(str[:-1])*1000000
     elif str[-1] is 'K':
         result = float(str[:-1])*1000
+    elif str[-1] is '-':
+        result = 0.0
     else:
         result = float(str)
     return result
@@ -44,14 +46,14 @@ def VolumeProcessing(str):
 def TransformToBinary(dataset):
     # data: 1 ~ -31 days, every day will compare to previous 1 day (5) and 30 days (5) and next day (1).
     # Hence, binary string will be (N-31)x(5+5+1) array
-    size = dataset.shape[0]-31
+    size = dataset.shape[0]-37
     binary_string = np.zeros((size , 11) , dtype=np.int)
 
     for i in range(size):
-        index = i + 1 # get the index of dataset
+        index = i + 7 # get the index of dataset
 
         thisday = dataset[index]
-        nextday = dataset[index-1] #next day
+        nextday = dataset[index-7] #next day
         prvday = dataset[index+1] #previous day
         monthdata = dataset[index+1:index+31] #previous 30 days
         averagedata = np.sum(monthdata ,axis= 0)/30 #average of previous 30 days
@@ -68,13 +70,13 @@ def TransformToBinary(dataset):
 
     arr3 = indicator.RSI(dataset)
 
-    print(arr1.shape)
+    # print(arr1.shape)
 
-    print(arr2.shape)
-    print(arr3.shape)
-    print(binary_string.shape)
+    # print(arr2.shape)
+    # print(arr3.shape)
+    # print(binary_string.shape)
 
-    input_string = np.hstack((arr1, arr2, arr3, binary_string[:,-1:]))
+    input_string = np.hstack((arr1, arr2, arr3, binary_string))
     
 
     print(input_string.shape)
