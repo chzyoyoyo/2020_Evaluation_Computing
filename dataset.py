@@ -79,6 +79,6 @@ def TransformToBinary(dataset):
     input_string = np.hstack((arr1, arr2, arr3, binary_string))
     
 
-    print(input_string.shape)
+    #print(input_string.shape)
 
     return input_string
