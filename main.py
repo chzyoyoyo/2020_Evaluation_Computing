@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
     #train model
     model = algorithm.new_model(scenario)
-    for epoch in range(60): #train 10 epochs
+    for epoch in range(50): #train 10 epochs
         scenario.reset()
         model.run(scenario , learn=True)
 

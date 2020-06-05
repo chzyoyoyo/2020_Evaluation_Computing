@@ -39,6 +39,8 @@ def comAvg(dataset, big, small):
 		else:
 			binary_string[i] = avg_small < avg_big
 
+		# binary_string[i] = avg_small > avg_big
+
 	return binary_string
 
 
