@@ -44,8 +44,8 @@ def VolumeProcessing(str):
     return result
 
 def TransformToBinary(dataset):
-    # data: 1 ~ -31 days, every day will compare to previous 1 day (5) and 30 days (5) and next day (1).
-    # Hence, binary string will be (N-31)x(5+5+1) array
+    # data: 1 ~ -31 days, every day will compare to previous 1 day (5) and 30 days (5) and next 7 day (1).
+    # Hence, binary string will be (N-30-7)x(5+5+1) array
     size = dataset.shape[0]-37
     binary_string = np.zeros((size , 11) , dtype=np.int)
 
@@ -77,8 +77,23 @@ def TransformToBinary(dataset):
     # print(binary_string.shape)
 
     input_string = np.hstack((arr1, arr2, arr3, binary_string))
-    
 
     #print(input_string.shape)
 
     return input_string
+
+def TransformToBinary2(dataset , ref_days = 30 , pred_days = 7):
+    size = dataset.shape[0] - ref_days - pred_days
+    binary_string = np.zeros((size , ref_days + 1) , dtype = np.int)
+
+    for i in range(size):
+        index = i + pred_days
+
+        for j in range(ref_days):
+            anchor__day_price = dataset[index + j][1] #close price
+            prv_day_price = dataset[index + j + 1][1] #close price
+            binary_string[i][j] = anchor__day_price > prv_day_price
+
+        binary_string[i][-1] = dataset[index - pred_days][1] > dataset[index][1]
+
+    return binary_string
