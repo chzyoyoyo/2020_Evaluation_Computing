@@ -38,8 +38,8 @@ class BitcoinProblem(Scenario):
 
 if __name__ == '__main__':
     #Get dataset
-    my_data = dataset.GetDataset('bitcoin.csv')
-    input_data = dataset.TransformToBinary(my_data) #for each data, [situation, action]
+    my_data = dataset.GetDataset('bitcoin_all.csv')
+    input_data = dataset.TransformToBinary(my_data , enable_indicator=True , pred_days=7) #for each data, [situation, action]
     #input_data = dataset.TransformToBinary2(my_data , 10 , 7)
     #np.random.shuffle(input_data)
     input_size = input_data.shape[0]
@@ -58,14 +58,14 @@ if __name__ == '__main__':
 
     #setting algorithm
     algorithm = xcs.XCSAlgorithm()
-    algorithm.exploration_probability = 0.05
+    algorithm.exploration_probability = 0.1
     algorithm.ga_threshold = 1
     algorithm.discount_factor = 0.9
     algorithm.crossover_probability = .6
     algorithm.do_action_set_subsumption = True
     algorithm.do_ga_subsumption = False
     algorithm.wildcard_probability = 0.7
-    algorithm.deletion_threshold = 10
+    algorithm.deletion_threshold = 1
     algorithm.mutation_probability = .05
 
     #setting logger
