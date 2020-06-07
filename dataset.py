@@ -37,21 +37,23 @@ def VolumeProcessing(str):
         result = float(str[:-1])*1000000
     elif str[-1] is 'K':
         result = float(str[:-1])*1000
+    elif str[-1] is '-':
+        result = 0.0
     else:
         result = float(str)
     return result
 
-def TransformToBinary(dataset):
-    # data: 1 ~ -31 days, every day will compare to previous 1 day (5) and 30 days (5) and next day (1).
-    # Hence, binary string will be (N-31)x(5+5+1) array
-    size = dataset.shape[0]-31
+def TransformToBinary(dataset , enable_indicator = True , pred_days = 7):
+    # data: 1 ~ -31 days, every day will compare to previous 1 day (5) and 30 days (5) and next 7 day (1).
+    # Hence, binary string will be (N-30-7)x(5+5+1) array
+    size = dataset.shape[0]-30 - pred_days
     binary_string = np.zeros((size , 11) , dtype=np.int)
 
     for i in range(size):
-        index = i + 1 # get the index of dataset
+        index = i + pred_days # get the index of dataset
 
         thisday = dataset[index]
-        nextday = dataset[index-1] #next day
+        nextday = dataset[index-pred_days] #next day
         prvday = dataset[index+1] #previous day
         monthdata = dataset[index+1:index+31] #previous 30 days
         averagedata = np.sum(monthdata ,axis= 0)/30 #average of previous 30 days
@@ -60,18 +62,34 @@ def TransformToBinary(dataset):
         binary_string[i][5:10] = thisday[1:] > averagedata[1:] #represent the up and downs compared to prvious 30 days
         binary_string[i][-1] = nextday[1] > thisday[1]  # up and down
 
-    arr1 = indicator.probability(dataset, 30).reshape(-1,1)
-    arr2 = indicator.comAvg(dataset, 30, 10).reshape(-1,1)
-    arr3 = indicator.RSI(dataset)
+    if enable_indicator:
+        arr1 = indicator.probability(dataset, 30 , pred_days).reshape(-1,1)
 
-    print(arr1.shape)
+        arr2_1 = indicator.comAvg(dataset, 10, 5 , pred_days).reshape(-1,1)
+        arr2_2 = indicator.comAvg(dataset, 30, 10 ,pred_days).reshape(-1,1)
+        arr2_3 = indicator.comAvg(dataset, 30, 7 , pred_days).reshape(-1,1)
+        arr2 = np.hstack((arr2_1, arr2_2, arr2_3))
 
-    print(arr2.shape)
-    print(arr3.shape)
-    print(binary_string.shape)
+        arr3 = indicator.RSI(dataset , pred_days)
 
-    input_string = np.hstack((arr1, arr2, arr3, binary_string))
-    
-
+        input_string = np.hstack((arr1, arr2, arr3, binary_string))
+    else:
+        input_string = binary_string
 
     return input_string
+
+def TransformToBinary2(dataset , ref_days = 30 , pred_days = 7):
+    size = dataset.shape[0] - ref_days - pred_days
+    binary_string = np.zeros((size , ref_days + 1) , dtype = np.int)
+
+    for i in range(size):
+        index = i + pred_days
+
+        for j in range(ref_days):
+            anchor__day_price = dataset[index + j][1] #close price
+            prv_day_price = dataset[index + j + 1][1] #close price
+            binary_string[i][j] = anchor__day_price > prv_day_price
+
+        binary_string[i][-1] = dataset[index - pred_days][1] > dataset[index][1]
+
+    return binary_string

@@ -10,40 +10,49 @@ def meanAvg(dataset, M, index):
 	
 	return sumClose / M
 
-def probability(dataset, M):
-	size = dataset.shape[0]-31
+def probability(dataset, M , pred_days = 7):
+	size = dataset.shape[0]-30-pred_days
 	binary_string = np.zeros(size, dtype=np.int)
 
 	for i in range(size):
-		index = i + 1 # get the index of dataset
+		index = i + pred_days # get the index of dataset
 		avg = meanAvg(dataset, M, index)
 		prob = (dataset[index][1] - avg) / avg
 		binary_string[i] = prob > 0
 
 	return binary_string
 
-def comAvg(dataset, big, small):
-	size = dataset.shape[0]-31
+def comAvg(dataset, big, small , pred_days= 7):
+	size = dataset.shape[0]-30-pred_days
 	binary_string = np.zeros(size, dtype=np.int)
 
 	for i in range(size):
-		index = i + 1
+		index = i + pred_days
 		avg_big = meanAvg(dataset, big, index)
 		avg_small = meanAvg(dataset, small, index)
-		binary_string[i] = avg_small > avg_big
+		prv_big = meanAvg(dataset, big, index+1)
+		prv_small = meanAvg(dataset, small, index+1)
+
+		if prv_small < prv_big:
+			binary_string[i] = avg_small > avg_big
+
+		else:
+			binary_string[i] = avg_small < avg_big
+
+		# binary_string[i] = avg_small > avg_big
 
 	return binary_string
 
 
-def RSI(dataset):
-	size = dataset.shape[0]-31
+def RSI(dataset , pred_days = 7):
+	size = dataset.shape[0]-30 - pred_days
 	binary_string = np.zeros((size,4), dtype=np.int)
 
 	for i in range(size):
-		allsum = np.zeros((4,4), dtype=np.int)
+		allsum = np.zeros((4,4), dtype=np.float)
 
 		for j in range(30): #sum the 
-			index = i + 1 + j # get the index of dataset
+			index = i + pred_days + j # get the index of dataset
 			thisday = dataset[index]
 			prvday = dataset[index+1] #previous day
 

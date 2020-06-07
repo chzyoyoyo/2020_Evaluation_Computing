@@ -38,11 +38,20 @@ class BitcoinProblem(Scenario):
 
 if __name__ == '__main__':
     #Get dataset
-    my_data = dataset.GetDataset('bitcoin.csv')
-    input_data = dataset.TransformToBinary(my_data) #for each data, [situation, action]
-    traindata = input_data[:1000]
-    testdata = input_data[1000:]
+    my_data = dataset.GetDataset('bitcoin_all.csv')
+    input_data = dataset.TransformToBinary(my_data , enable_indicator=True , pred_days=7) #for each data, [situation, action]
+    #input_data = dataset.TransformToBinary2(my_data , 10 , 7)
+    #np.random.shuffle(input_data)
+    input_size = input_data.shape[0]
+    traindata = input_data[-1:-int(input_size*0.8):-1]
+    testdata = input_data[-int(input_size*0.8)::-1]
 
+    sum_up = 0
+    test_number = testdata.shape[0]
+    for i in range(test_number):
+        if testdata[i][-1] == 1:
+            sum_up += 1
+    print("sum_up: ", sum_up/test_number)
     #-------------------- Training stage ---------------------------
     #setting problem
     scenario = ScenarioObserver(BitcoinProblem(traindata))
@@ -51,12 +60,13 @@ if __name__ == '__main__':
     algorithm = xcs.XCSAlgorithm()
     algorithm.exploration_probability = 0.1
     algorithm.ga_threshold = 1
-    algorithm.crossover_probability = .5
+    algorithm.discount_factor = 0.9
+    algorithm.crossover_probability = .6
     algorithm.do_action_set_subsumption = True
     algorithm.do_ga_subsumption = False
-    algorithm.wildcard_probability = .998
+    algorithm.wildcard_probability = 0.7
     algorithm.deletion_threshold = 1
-    algorithm.mutation_probability = .002
+    algorithm.mutation_probability = .05
 
     #setting logger
     logging.basicConfig(level=logging.INFO)
@@ -64,7 +74,7 @@ if __name__ == '__main__':
 
     #train model
     model = algorithm.new_model(scenario)
-    for epoch in range(10): #train 10 epochs
+    for epoch in range(1): #train 10 epochs
         scenario.reset()
         model.run(scenario , learn=True)
 
@@ -73,5 +83,4 @@ if __name__ == '__main__':
 
     #--------------------------- Testing stage -------------------------
     scenario = ScenarioObserver(BitcoinProblem(testdata))
-    model.run(scenario , learn=False)
-
+    model.run(scenario , learn=True)
