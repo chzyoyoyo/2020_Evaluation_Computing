@@ -49,7 +49,7 @@ def RSI(dataset , pred_days = 7):
 	binary_string = np.zeros((size,4), dtype=np.int)
 
 	for i in range(size):
-		allsum = np.zeros((4,4), dtype=np.float)
+		allsum = np.zeros((4,3), dtype=np.float)
 
 		for j in range(30): #sum the 
 			index = i + pred_days + j # get the index of dataset
@@ -59,14 +59,14 @@ def RSI(dataset , pred_days = 7):
 			for k in range(4):
 				if thisday[k+1] > prvday[k+1]:
 					allsum[k][0] += thisday[k+1] - prvday[k+1]
-					allsum[k][1] += 1
 				else:
-					allsum[k][2] += prvday[k+1] - thisday[k+1]
-					allsum[k][3] += 1
+					allsum[k][1] += prvday[k+1] - thisday[k+1]
+
+				allsum[k][2] += 1
 
 		for k in range(4):
-			avg_up = allsum[k][0] / allsum[k][1]
-			avg_down = allsum[k][2] / allsum[k][3]
+			avg_up = allsum[k][0] / allsum[k][2]
+			avg_down = allsum[k][1] / allsum[k][2]
 			rsi = avg_up / (avg_up + avg_down) * 100
 			binary_string[i][k] = rsi < 50
 
