@@ -67,7 +67,11 @@ def RSI(dataset , pred_days = 7):
 		for k in range(4):
 			avg_up = allsum[k][0] / allsum[k][2]
 			avg_down = allsum[k][1] / allsum[k][2]
-			rsi = avg_up / (avg_up + avg_down) * 100
+			if (avg_up + avg_down) > 0:
+				rsi = avg_up / (avg_up + avg_down) * 100
+
+			else:
+				rsi = 0
 			binary_string[i][k] = rsi < 50
 
 	return binary_string
