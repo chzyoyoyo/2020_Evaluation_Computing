@@ -4,6 +4,8 @@ from xcs.bitstrings import BitString
 import logging
 import dataset
 import numpy as np
+import statistics
+import copy
 
 class BitcoinProblem(Scenario):
     def __init__(self , input_data):
@@ -12,10 +14,11 @@ class BitcoinProblem(Scenario):
         self.size = input_data.shape[0]
         self.current_index = 0
         self.groundtruth = None
+        self.correct = 0
 
     @property
     def is_dynamic(self):
-        return False
+        return True
 
     def get_possible_actions(self):
         return self.possible_actions
@@ -34,14 +37,17 @@ class BitcoinProblem(Scenario):
 
     def execute(self, action):
         self.current_index += 1
+        if action == self.groundtruth:
+            self.correct += 1
         return action == self.groundtruth #reward
 
 if __name__ == '__main__':
     #Get dataset
     my_data = dataset.GetDataset('bitcoin_all.csv')
-    input_data = dataset.TransformToBinary(my_data , enable_indicator=True , pred_days=7) #for each data, [situation, action]
-    #input_data = dataset.TransformToBinary2(my_data , 10 , 7)
-    #np.random.shuffle(input_data)
+    #input_data = dataset.TransformToBinary(my_data , enable_indicator=True , pred_days=1) #for each data, [situation, action]
+    #input_data = dataset.TransformToBinary2(my_data , 10 , 1)
+    input_data = dataset.TransformToBinary3(my_data, enable_indicator=True, pred_days=1 , comp_days=6)
+
     input_size = input_data.shape[0]
     traindata = input_data[-1:-int(input_size*0.8):-1]
     testdata = input_data[-int(input_size*0.8)::-1]
@@ -51,36 +57,39 @@ if __name__ == '__main__':
     for i in range(test_number):
         if testdata[i][-1] == 1:
             sum_up += 1
-    print("sum_up: ", sum_up/test_number)
-    #-------------------- Training stage ---------------------------
-    #setting problem
-    scenario = ScenarioObserver(BitcoinProblem(traindata))
+    print("Always say True: ", sum_up/test_number)
 
     #setting algorithm
     algorithm = xcs.XCSAlgorithm()
     algorithm.exploration_probability = 0.1
-    algorithm.ga_threshold = 1
-    algorithm.discount_factor = 0.9
+    algorithm.ga_threshold = 10
+    algorithm.discount_factor = 0.1
     algorithm.crossover_probability = .6
     algorithm.do_action_set_subsumption = True
-    algorithm.do_ga_subsumption = False
-    algorithm.wildcard_probability = 0.7
-    algorithm.deletion_threshold = 1
+    algorithm.wildcard_probability = 0.5
+    algorithm.deletion_threshold = 10
     algorithm.mutation_probability = .05
+    algorithm.fitness_threshold = 0.95
+    algorithm.error_threshold = 0.01
 
-    #setting logger
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
+    result = []
+    for i in range(10): #10 indepedent runs
+        # -------------------- Training stage ---------------------------
+        # setting problem
+        scenario = ScenarioObserver(BitcoinProblem(traindata))
 
-    #train model
-    model = algorithm.new_model(scenario)
-    for epoch in range(1): #train 10 epochs
-        scenario.reset()
+        #train model
+        model = algorithm.new_model(scenario)
         model.run(scenario , learn=True)
 
-    #print model
-    logger.info(model)
+        #print information
+        #print(model)
+        print('Run',i+1,': training stage correct rate:', scenario.wrapped.correct / scenario.steps)
 
-    #--------------------------- Testing stage -------------------------
-    scenario = ScenarioObserver(BitcoinProblem(testdata))
-    model.run(scenario , learn=True)
+        #--------------------------- Testing stage -------------------------
+        scenario = ScenarioObserver(BitcoinProblem(testdata))
+        model.run(scenario , learn=True)
+        result.append(scenario.wrapped.correct / scenario.steps)
+        print('Run', i+1,': testing stage correct rate:', scenario.wrapped.correct / scenario.steps)
+
+    print('testing stage correct mean:' ,statistics.mean(result), ',variance:' ,  statistics.variance(result))
