@@ -44,13 +44,16 @@ class BitcoinProblem(Scenario):
 if __name__ == '__main__':
     #Get dataset
     my_data = dataset.GetDataset('bitcoin_all.csv')
+    my_data2 = dataset.GetDataset('Ethereum.csv')
     #input_data = dataset.TransformToBinary(my_data , enable_indicator=True , pred_days=1) #for each data, [situation, action]
     #input_data = dataset.TransformToBinary2(my_data , 10 , 1)
-    input_data = dataset.TransformToBinary3(my_data, enable_indicator=True, pred_days=1 , comp_days=6)
+    input_data = dataset.TransformToBinary3(my_data, enable_indicator=False, pred_days=1 , comp_days=2)
+    # input_data2 = dataset.TransformToBinary3(my_data2, enable_indicator=False, pred_days=1 , comp_days=2)
 
     input_size = input_data.shape[0]
-    traindata = input_data[-1:-int(input_size*0.8):-1]
-    testdata = input_data[-int(input_size*0.8)::-1]
+    traindata = input_data[-1:-int(input_size*0.5):-1]
+    testdata = input_data[-int(input_size*0.5)::-1]
+    # testdata2 = input_data2[::-1]
 
     sum_up = 0
     test_number = testdata.shape[0]
