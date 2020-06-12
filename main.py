@@ -65,15 +65,10 @@ if __name__ == '__main__':
     #setting algorithm
     algorithm = xcs.XCSAlgorithm()
     algorithm.exploration_probability = 0.1
-    algorithm.ga_threshold = 10
     algorithm.discount_factor = 0.1
     algorithm.crossover_probability = .6
-    algorithm.do_action_set_subsumption = True
-    algorithm.wildcard_probability = 0.5
-    algorithm.deletion_threshold = 10
     algorithm.mutation_probability = .05
-    algorithm.fitness_threshold = 0.95
-    algorithm.error_threshold = 0.01
+    algorithm.do_action_set_subsumption = True
 
     result = []
     for i in range(10): #10 indepedent runs
