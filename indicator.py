@@ -33,13 +33,13 @@ def comAvg(dataset, big, small , pred_days= 7):
 		prv_big = meanAvg(dataset, big, index+1)
 		prv_small = meanAvg(dataset, small, index+1)
 
-		if prv_small < prv_big:
-			binary_string[i] = avg_small > avg_big
+		# if prv_small < prv_big:
+		# 	binary_string[i] = avg_small > avg_big
 
-		else:
-			binary_string[i] = avg_small < avg_big
+		# else:
+		# 	binary_string[i] = avg_small < avg_big
 
-		# binary_string[i] = avg_small > avg_big
+		binary_string[i] = avg_small > avg_big
 
 	return binary_string
 

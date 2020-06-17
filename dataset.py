@@ -124,6 +124,7 @@ def TransformToBinary3(dataset , enable_indicator = True , pred_days = 1 ,  comp
 
         arr3 = indicator.RSI(dataset , pred_days)
 
+        # input_string = binary_string
         input_string = np.hstack((arr1, arr2, arr3, binary_string))
     else:
         input_string = binary_string
