@@ -1,2 +1,2 @@
-# NCTU_EC_2020
+# 2020_Evaluation_Computing
 Evolution computing 2020 final project
